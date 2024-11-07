@@ -8,19 +8,20 @@
 
 class OctreeNode {
 public:
-    std::array<int, 6> region; // [y_start, y_end, x_start, x_end, z_start, z_end]
+    std::array<int, 6> region; // [x_start, x_end, y_start, y_end, z_start, z_end]
     bool isLeaf;
     std::vector<OctreeNode*> children;
-    int avg;
+    double value;
 
-    OctreeNode(int y_start, int y_end, int x_start, int x_end, int z_start, int z_end);
+    OctreeNode(int x_start, int x_end, int y_start, int y_end, int z_start, int z_end);
     ~OctreeNode();
-};
-int isHomogeneous(const std::vector<std::vector<std::vector<int>>>& volume,
-                  int y_start, int y_end, int x_start, int x_end, int z_start, int z_end, int threshold);
 
-OctreeNode* buildOctree(const std::vector<std::vector<std::vector<int>>>& volume,
-                        int y_start, int y_end, int x_start, int x_end, int z_start, int z_end,
+    void pool(const std::vector<std::vector<std::vector<int>>>* volume, double *values,
+              int x_start, int x_end, int y_start, int y_end, int z_start, int z_end);
+};
+
+OctreeNode* buildOctree(const std::vector<std::vector<std::vector<int>>> *volume,
+                        int x_start, int x_end, int y_start, int y_end, int z_start, int z_end,
                         int maxDepth, int threshold);
 
 void saveMatAsTensor(const cv::Mat& mat, const std::string& file_path);

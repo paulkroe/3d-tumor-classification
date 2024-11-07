@@ -12,7 +12,7 @@ int main() {
 
     int maxDepth = 25;
     int threshold = 50;
-    OctreeNode* root = buildOctree(volume, 0, volume.size(), 0, volume[0].size(), 0, volume[0][0].size(), maxDepth, threshold);
+    OctreeNode* root = buildOctree(&volume, 0, volume.size(), 0, volume[0].size(), 0, volume[0][0].size(), maxDepth, threshold);
 
     int z_target = 50;
     cv::Mat reconstruction(height, width, CV_32S, cv::Scalar(0));

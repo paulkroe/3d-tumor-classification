@@ -1,3 +1,7 @@
 /archive
 /archive.zip
-/feature_extraction/libtorch
+/*/libtorch
+*.o
+*.json
+*.pth
+*.pt
