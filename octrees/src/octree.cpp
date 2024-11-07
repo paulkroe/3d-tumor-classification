@@ -36,47 +36,48 @@ void pool(const std::vector<std::vector<std::vector<int>>>* volume, double *valu
 OctreeNode* buildOctree(const std::vector<std::vector<std::vector<int>>> *volume,
                         int x_start, int x_end, int y_start, int y_end, int z_start, int z_end,
                         int maxDepth, int threshold) {
-    
-    // TODO: what happens if this is not a square
+
     double values[3];
     OctreeNode* node = new OctreeNode(x_start, x_end, y_start, y_end, z_start, z_end);
 
     pool(volume, values, x_start, x_end, y_start, y_end, z_start, z_end);
     node->value = values[0];
-    
-    // max - min < threshold or max depth reached -> no split
-    if ((values[2] - values[1] < threshold) || (maxDepth == 0)) {
+
+    // std::cout<<values[0]<<" "<<values[1]<<" "<<values[2]<<"\n";
+    // max - min <= threshold or max depth reached -> no split
+    if ((values[2] - values[1] <= threshold) || (maxDepth == 0)) {
         node->isLeaf = true;
+        node->value = values[2];
+        // std::cout<<"here"<<x_start<<" "<<y_start<<" "<<z_start<<"\n";
     } else { // branch
-        
         int x_mid = (x_start + x_end) / 2;
         int y_mid = (y_start + y_end) / 2;
         int z_mid = (z_start + z_end) / 2;
 
-        // it might be that we don't need 8 children because the input volume might not be a perfect cube
-        int leaf_mask = (z_end - z_start > 1) * 4 + (y_end - y_start > 1) * 2 + (x_end - x_start > 1);
-        node->children.reserve(((x_end - x_start > 1) + 1) * ((y_end - y_start > 1) + 1) * ((z_end - z_start > 1) + 1));
-        
+        node->children.reserve(((x_end - x_start > 1) + 1) *
+                               ((y_end - y_start > 1) + 1) *
+                               ((z_end - z_start > 1) + 1));
+
         for (int i = 0; i < 8; i++) {
-
             int new_x_start = (i & 1) ? x_mid : x_start;
-            int new_x_end = (i & 1) ? x_end : x_mid;
-            
-            int new_y_start = (i & 2) ? y_mid :y_start;
-            int new_y_end = (i & 2) ? y_end : y_mid;
+            int new_x_end   = (i & 1) ? x_end : x_mid;
 
-            int new_z_start = (i & 4) ? z_mid :z_start;
-            int new_z_end = (i & 4) ? z_end : z_mid;
-            if (
-                ((i & 4) && !(4 & leaf_mask)) || // should not split in x dimension
-                ((i & 2) && !(2 & leaf_mask)) || // should not split in y dimension
-                ((i & 1) && !(1 & leaf_mask))    // should not split in z dimension
-            )
-                continue;
+            int new_y_start = (i & 2) ? y_mid : y_start;
+            int new_y_end   = (i & 2) ? y_end : y_mid;
 
-            node->children.push_back(buildOctree(volume, new_x_start, new_x_end, new_y_start, new_y_end, new_z_start, new_z_end, maxDepth - 1, threshold));
+            int new_z_start = (i & 4) ? z_mid : z_start;
+            int new_z_end   = (i & 4) ? z_end : z_mid;
+
+            if ((new_x_end - new_x_start) > 0 && 
+                (new_y_end - new_y_start) > 0 && 
+                (new_z_end - new_z_start) > 0)
+            {
+                node->children.push_back(buildOctree(volume, new_x_start, new_x_end,
+                                                     new_y_start, new_y_end,
+                                                     new_z_start, new_z_end,
+                                                     maxDepth - 1, threshold));
+            }
         }
-
     }
 
     return node;
@@ -160,40 +161,3 @@ std::vector<std::vector<std::vector<int>>> loadVolumeFromImages(const std::strin
 
     return volume;
 }
-
-/*
-void isHomogeneous(const std::vector<std::vector<std::vector<int>>>& volume) {
-    int x_start = this->region[0];
-    int x_end = this->region[1];
-    
-    int y_start = this->region[2];
-    int y_end = this->region[3];
-
-    int z_start = this->region[4];
-    int z_end = this->region[5];
-
-    int min_val = volume[y_start][x_start][z_start];
-    int max_val = min_val;
-
-    double sum = 0;
-    int nr = 0;
-
-    for (int y = y_start; y < y_end; ++y) {
-        for (int x = x_start; x < x_end; ++x) {
-            int value = volume[y][x][z_start];
-            nr++;
-            sum += value;
-            if (value < min_val) min_val = value;
-            if (value > max_val) max_val = value;
-            if ((max_val - min_val) > threshold) {
-                this->avg = -1;
-                this->isLeaf = false;
-            }
-        }
-    }
-   
-    this->isLeaf = true;
-    this->avg sum / nr;
-    
-}
-*/
