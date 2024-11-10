@@ -2,6 +2,7 @@
 /archive
 /archive.zip
 /octrees/src/libtorch
+/build
 
 # C++ build files
 *.o
@@ -12,6 +13,9 @@
 *.so
 *.dll
 *.dylib
+
+# CSV
+*csv
 
 # CMake build directories
 /build/
