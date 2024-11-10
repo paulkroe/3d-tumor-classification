@@ -1,9 +1,9 @@
-#include "../src/octree.h"  // Adjust path based on octree.h's actual location
+#include "../src/octree.h"
 #include <iostream>
 #include <cassert>
 
 int main() {
-    std::string folderPath = "../../archive/data";
+    std::string folderPath = "../../archive/data/volume_1";
     int height = 369;
     int width = 369;
     int depth = 155;

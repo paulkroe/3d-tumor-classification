@@ -112,16 +112,12 @@ namespace fs = std::filesystem;
 
 std::vector<std::vector<std::vector<int>>> loadVolumeFromImages(const std::string& folderPath, int height, int width, int depth) {
     std::vector<std::vector<std::vector<int>>> volume(height, std::vector<std::vector<int>>(width, std::vector<int>(depth, 0)));
+    
 
-    // Collect filenames for volume_1 only
     std::vector<std::string> filenames;
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         const std::string filename = entry.path().filename().string();
-        
-        // Check if the file matches "volume_1" and has the correct format
-        if (filename.find("volume_1_slice_") != std::string::npos && filename.find(".png") != std::string::npos) {
-            filenames.push_back(entry.path().string());
-        }
+        filenames.push_back(entry.path().string());
     }
 
     // Sort filenames based on slice number extracted from filename

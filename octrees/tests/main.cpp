@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "octree.h" // Include your octree header file
+#include "../src/octree.h"
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -10,26 +10,14 @@ int main(int argc, char* argv[]) {
 
     int z_target = std::stoi(argv[1]);
 
-    std::string folderPath = "../../archive/data";
+    std::string folderPath = "../../archive/data/volume_1";
     int height = 369;
     int width = 369;
-    int depth = 71;
+    int depth = 155;
     auto volume = loadVolumeFromImages(folderPath, width, height, depth);
-
-    /*
-    int offset = 25;
-    int shift = 12;
-    */
     int maxDepth = 9;
     int threshold = 0;
     OctreeNode* root = buildOctree(&volume, 0, volume.size(), 0, volume[0].size(), 0, volume[0][0].size(), maxDepth, threshold);
-    /* OctreeNode* root = buildOctree(&volume, offset, offset+shift, offset, offset+shift, offset, offset+shift, maxDepth, threshold);
-
-    for (int i = 0; i < shift; i++)
-        for (int j = 0; j < shift; j++)
-            for (int l = 0; l < shift; l++)
-                std::cout<<volume[offset][offset][offset];
-    */
 
     cv::Mat reconstruction(height, width, CV_32S, cv::Scalar(0));
     
