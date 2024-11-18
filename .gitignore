@@ -3,7 +3,9 @@
 /archive.zip
 /octrees/src/libtorch
 /build
+/preds
 
+*zip
 # C++ build files
 *.o
 *.obj
