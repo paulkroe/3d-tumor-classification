@@ -1,15 +1,7 @@
 #include <fstream>
 #include <vector>
 #include <../src/octree.h>
-
-// Example octree traversal - replace this with your actual traversal function
-void ExampleOctreeTraversal() {
-    std::vector<OctreeNode> octreeData;
-    OctreeNode node = OctreeNode(0, 5, 0, 5, 0, 5);
-    node.value = 1;
-    octreeData.push_back(node);
-    // saveOctree(octreeData, "octree_data.csv");
-}
+#include <thread>
 
 // called by a thread to collect the data in a subtree
 void collectData(OctreeNode* octree, std::stringstream& buffer) {
@@ -45,6 +37,21 @@ void exportOctreeToCSV(OctreeNode* root, const std::string& filename) {
     }
 }
 
+
+extern "C" void process_volume(int* array, int height, int width, int depth, int maxDepth, int threshold, const char* filename) {
+    std::vector<std::vector<std::vector<int>>> volume(height, 
+        std::vector<std::vector<int>>(width, 
+            std::vector<int>(depth, 0)));
+    
+    volume = loadVolumeFromArray(array, height, width, depth);
+    OctreeNode* root = buildOctree(&volume, 0, volume.size(), 0, volume[0].size(), 0, volume[0][0].size(), maxDepth, threshold);
+    exportOctreeToCSV(root, filename);
+}
+
+/*
+ * Given a volume number, max depth, and a difference threshold,
+ * this generates a csv that can be used to visualize a volume 
+ */
 int main(int argc, char* argv[]) {
     if (argc != 4) {
         std::cerr << "Usage: " << argv[0]  << " <volume>"  << " <max_depth>" << " <threshold>" << std::endl;
@@ -62,3 +69,4 @@ int main(int argc, char* argv[]) {
     OctreeNode* root = buildOctree(&volume, 0, volume.size(), 0, volume[0].size(), 0, volume[0][0].size(), maxDepth, threshold);
     exportOctreeToCSV(root, "octree_data.csv");
 }
+

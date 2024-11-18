@@ -83,13 +83,6 @@ OctreeNode* buildOctree(const std::vector<std::vector<std::vector<int>>> *volume
     return node;
 }
 
-void saveMatAsTensor(const cv::Mat& mat, const std::string& file_path) {
-    
-    torch::Tensor tensor = torch::from_blob(mat.data, {mat.rows, mat.cols}, torch::kInt32);
-    tensor = tensor.clone();
-    torch::save(tensor, file_path);
-}
-
 void retriveImage(OctreeNode* node, cv::Mat& reconstruction, int z_target) {
     if (!node) return;
     if (!(node->region[4] <= z_target && z_target < node->region[5])) return;
@@ -108,12 +101,26 @@ void retriveImage(OctreeNode* node, cv::Mat& reconstruction, int z_target) {
     }
 }
 
-namespace fs = std::filesystem;
 
-std::vector<std::vector<std::vector<int>>> loadVolumeFromImages(const std::string& folderPath, int height, int width, int depth) {
-    std::vector<std::vector<std::vector<int>>> volume(height, std::vector<std::vector<int>>(width, std::vector<int>(depth, 0)));
+std::vector<std::vector<std::vector<int>>> loadVolumeFromArray(int* array, int height, int width, int depth) {
     
+    std::vector<std::vector<std::vector<int>>> volume(height, std::vector<std::vector<int>>(width, std::vector<int>(depth, 0)));
 
+    int index = 0;
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            for (int k = 0; k < depth; ++k) {
+                volume[i][j][k] = array[index++];
+            }
+        }
+    }
+    return volume;
+}
+
+namespace fs = std::filesystem;
+std::vector<std::vector<std::vector<int>>> loadVolumeFromImages(const std::string& folderPath, int height, int width, int depth) {
+    
+    std::vector<std::vector<std::vector<int>>> volume(height, std::vector<std::vector<int>>(width, std::vector<int>(depth, 0)));
     std::vector<std::string> filenames;
     for (const auto& entry : fs::directory_iterator(folderPath)) {
         const std::string filename = entry.path().filename().string();

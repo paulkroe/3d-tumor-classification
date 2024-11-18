@@ -4,7 +4,6 @@
 #include <vector>
 #include <array>
 #include <opencv2/opencv.hpp>
-#include <torch/torch.h>
 
 class OctreeNode {
 public:
@@ -24,9 +23,8 @@ OctreeNode* buildOctree(const std::vector<std::vector<std::vector<int>>> *volume
                         int x_start, int x_end, int y_start, int y_end, int z_start, int z_end,
                         int maxDepth, int threshold);
 
-void saveMatAsTensor(const cv::Mat& mat, const std::string& file_path);
-
 void retriveImage(OctreeNode* node, cv::Mat& reconstruction, int z_target);
 
 std::vector<std::vector<std::vector<int>>> loadVolumeFromImages(const std::string& folderPath, int height, int width, int depth);
+std::vector<std::vector<std::vector<int>>> loadVolumeFromArray(int *array, int height, int width, int depth);
 #endif
